@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+    <title>ConvertCSVtoJSON</title> 
+  </head>
+  <body>
+    <!-- <h1>convertCSVtoJSON</h1> -->
+
+<div class="container">
+            <h2>Example: Convert CSV to JSON using JavaScript</h2>	
+            <div class="form-group">
+                <label for="csvData">Paste CSV Data:</label>
+                <textarea id="csvData" class="form-control" rows="6"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="jsonData">JSON Data Output:</label>
+                <textarea id="jsonData" class="form-control" rows="6"></textarea>
+            </div>    
+            <button id="convertCSV" class="btn btn-success">Convert to JSON</button>    
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script>
+                    $( document ).ready(function() {
+                        $("#convertCSV").click(function() {
+                            var csvData = $("#csvData").val();
+                            var jsonData = CSVToJSON(csvData);
+                            $("#jsonData").val(jsonData);
+                        });
+                    });
+                    function CSVToJSON(csvData) {
+                            var data = CSVToArray(csvData)
+                            console.log(data)
+                            var objData = [];
+                            for (var i = 1; i < data.length; i++) {
+                                objData[i - 1] = {};
+                                for (var k = 0; k < data[0].length && k < data[i].length; k++) {
+                                    var key = data[0][k];
+                                    objData[i - 1][key] = data[i][k]
+                                }
+                            }
+                            var jsonData = JSON.stringify(objData);
+                            jsonData = jsonData.replace(/},/g, "},\r\n");
+                            return jsonData;
+                        }
+                    function CSVToArray(csvData, delimiter) {
+                        delimiter = (delimiter || ",");
+                        var pattern = new RegExp((
+                        "(\\" + delimiter + "|\\r?\\n|\\r|^)" +
+                        "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+                        "([^\"\\" + delimiter + "\\r\\n]*))"), "gi");
+                        var data = [[]];
+                        var matches = null;
+                        while (matches = pattern.exec(csvData)) {
+                            var matchedDelimiter = matches[1];
+                            if (matchedDelimiter.length && (matchedDelimiter != delimiter)) {
+                                data.push([]);
+                            }
+                            if (matches[2]) {
+                                var matchedDelimiter = matches[2].replace(
+                                new RegExp("\"\"", "g"), "\"");
+                            } else {
+                                var matchedDelimiter = matches[3];
+                            }
+                            data[data.length - 1].push(matchedDelimiter);
+                        }
+                        return (data);
+                    }
+        </script>
+</body>
+</html>
